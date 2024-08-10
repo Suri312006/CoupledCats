@@ -1,18 +1,11 @@
-use bevy::window::WindowLevel;
-use bevy::winit::winit_window_position;
 use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
-    render::camera::RenderTarget,
-    window::{Cursor, PrimaryWindow, WindowRef, WindowResolution},
-    winit::WinitWindows,
+    window::{WindowLevel, WindowResolution},
 };
 
-#[derive(Resource, Deref, DerefMut)]
-struct WindowMover {
-    #[deref]
-    pub speed: f32,
-    pub position: f32,
-}
+mod sprite_sheet;
+use sprite_sheet::*;
 
 #[derive(Component)]
 struct Cat;
@@ -25,57 +18,39 @@ fn main() {
         resizable: false,
         resolution: WindowResolution::new(100.0, 100.0).with_scale_factor_override(1.0),
         position: WindowPosition::Centered(MonitorSelection::Current),
-        cursor: Cursor {
-            hit_test: false,
-            ..default()
-        },
         ..default()
     };
 
     App::new()
         .insert_resource(ClearColor(Color::NONE))
-        .insert_resource(WindowMover {
-            speed: 20.0,
-            position: 0.0,
-        })
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(trans_window),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(trans_window),
+                    ..default()
+                })
+                .set(ImagePlugin::default_nearest()), // needed for clear sprites,
+        )
+        // .add_plugins(LogDiagnosticsPlugin::default())
+        // .add_plugins(FrameTimeDiagnosticsPlugin::default()) frame rate diagnostics
         .add_systems(Startup, setup)
-        .add_systems(Update, (move_window,))
+        .add_systems(Update, (move_window, animate_sprite))
         .run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    const CAT_X: f32 = 0.0;
-    const CAT_Y: f32 = 0.0;
-    const CAT_Z: f32 = 0.0;
-
-    commands.spawn(Camera2dBundle {
-        transform: Transform::from_xyz(CAT_X, CAT_Y, CAT_Z + 5.0),
-        ..Default::default()
-    });
-
-    commands.spawn((
-        Cat,
-        SpriteBundle {
-            texture: asset_server.load("neutral.png"),
-            transform: Transform::from_xyz(CAT_X, CAT_Y, CAT_Z)
-                .with_scale(Vec3::new(1.0, 1.0, 1.0)),
-            visibility: Visibility::Visible,
-            ..default()
-        },
-    ));
-}
-
-fn move_window(time: Res<Time>, mut windows: Query<&mut Window>, mut mover: ResMut<WindowMover>) {
+fn move_window(time: Res<Time>, mut windows: Query<&mut Window>) {
     let mut window = windows.single_mut();
 
-    mover.position += mover.speed * time.delta_seconds();
+    let mut new_x = 0;
+    let mut new_y = 0;
 
-    let new_x = mover.position as i32;
+    match window.position {
+        WindowPosition::At(ivec) => {
+            new_x = ivec[0] + 1;
+            new_y = ivec[1] + 0; // we not goin down
+        }
+        _ => {}
+    }
 
-    // window.position = WindowPosition::new(position);
-    window.position.set(IVec2::new(new_x, 25.0 as i32));
+    window.position.set(IVec2::new(new_x, new_y));
 }
