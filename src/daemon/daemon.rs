@@ -1,4 +1,3 @@
-use color_eyre::eyre::Result;
 use tonic::{Request, Response, Status};
 
 use crate::grpc::{hello_service_server::HelloService, HelloReq, HelloRes};
