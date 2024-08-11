@@ -1,5 +1,5 @@
 mod animate;
-mod cat;
 mod app;
+mod cat;
 
 pub use app::*;

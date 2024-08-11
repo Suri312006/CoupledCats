@@ -12,7 +12,7 @@ use super::{
 pub struct CoupledCats;
 
 impl CoupledCats {
-    pub fn run() {
+    pub fn run(mut app: App) {
         let trans_window = Window {
             transparent: true,
             decorations: false,
@@ -27,8 +27,7 @@ impl CoupledCats {
             ..default()
         };
 
-        App::new()
-            .insert_resource(ClearColor(Color::NONE))
+        app.insert_resource(ClearColor(Color::NONE))
             .add_plugins(
                 DefaultPlugins
                     .set(WindowPlugin {
@@ -58,22 +57,19 @@ fn move_window(
     let mut new_x = 0;
     let mut new_y = 0;
 
-    match window.position {
-        WindowPosition::At(ivec) => {
-            if ivec.x >= (bounds.0.x as i32) {
-                //todo: flip sprite
-                vel.0.x = -2;
-                transform.rotation = Quat::from_rotation_y(std::f32::consts::PI);
-            }
-            if ivec.x <= 0 {
-                vel.0.x = 2;
-                transform.rotation = Quat::default();
-            }
-
-            new_x = ivec.x + vel.0.x;
-            new_y = ivec.y + vel.0.y;
+    if let WindowPosition::At(ivec) = window.position {
+        if ivec.x >= (bounds.0.x as i32) {
+            //todo: flip sprite
+            vel.0.x = -2;
+            transform.rotation = Quat::from_rotation_y(std::f32::consts::PI);
         }
-        _ => {}
+        if ivec.x <= 0 {
+            vel.0.x = 2;
+            transform.rotation = Quat::default();
+        }
+
+        new_x = ivec.x + vel.0.x;
+        new_y = ivec.y + vel.0.y;
     }
 
     window
