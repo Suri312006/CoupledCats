@@ -2,4 +2,4 @@ default:
     echo 'Hello, world!'
 
 run: 
-    cargo run
+    cargo run --bin CoupledCats

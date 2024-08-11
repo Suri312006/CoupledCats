@@ -1,7 +1,7 @@
-mod utils;
+mod game;
 mod grpc;
-mod bevy;
+mod utils;
 
-pub use utils::*;
+pub use game::*;
 pub use grpc::*;
-pub use bevy::*;
+pub use utils::*;

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package coupledcats;
+
+message HelloReq{
+    string name = 1;
+}
+
+message HelloRes{
+    string reply = 1;
+}
+
+service HelloService{
+   rpc SayHello(HelloReq) returns (HelloRes);
+}
