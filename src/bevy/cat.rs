@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{animate::AnimationIndicies, AnimationTimer};
+use super::animate::{AnimationIndicies, AnimationTimer};
 
 #[derive(Component)]
 pub struct Cat {}
@@ -28,15 +28,6 @@ impl Cat {
         mut texture_atlas_layout: ResMut<Assets<TextureAtlasLayout>>,
     ) {
         //TODO: bind it to one monitor
-        // okay so we jsut have to cap these to the display size
-        // https://docs.rs/winit/0.26.1/winit/event_loop/struct.EventLoopWindowTarget.html#method.available_monitors
-        // TODO: use the link above to set proper sizing constraints
-        // for display in DisplayInfo::all().unwrap() {
-        //     cat_state.bounds.x += display.width;
-        //     // okay so this might be weird, ideally we would want it to choose the max one?
-        //     cat_state.bounds.y = display.height;
-        // }
-
         let texture = asset_server.load("fox-run.png");
         let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
         let texture_atlas_layout = texture_atlas_layout.add(layout);

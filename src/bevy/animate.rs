@@ -9,8 +9,6 @@ pub struct AnimationIndicies {
     pub last: usize,
 }
 
-
-
 pub fn animate_sprite(
     time: Res<Time>,
     mut query: Query<(&AnimationIndicies, &mut AnimationTimer, &mut TextureAtlas)>,

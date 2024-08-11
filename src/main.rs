@@ -1,15 +1,13 @@
 use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    // add these if you want diagnostics
+    // diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
-    window::{Cursor, PrimaryWindow, WindowLevel, WindowResolution},
-    winit::winit_window_position,
+    window::{Cursor, WindowLevel, WindowResolution},
 };
-
-mod animate;
-mod cat;
-
-use animate::*;
-use cat::*;
+use coupled_cats::{
+    animate::animate_sprite,
+    cat::{Bounds, Cat, Velocity},
+};
 
 fn main() {
     let trans_window = Window {
@@ -44,7 +42,7 @@ fn main() {
         .run();
 }
 
-// maybe would be nice to move this onto cat?
+// maybe would be nice to move this onto cat, yeah probs?
 fn move_window(
     mut query: Query<(&mut Velocity, &Bounds, &mut Transform)>,
     mut windows: Query<&mut Window>,
