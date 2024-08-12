@@ -1,16 +1,16 @@
 // this client should connect to the other peers server server
-
+use color_eyre::eyre::Result;
 use tonic::transport::Channel;
 
 use crate::{
     bridge::{BevyLink, DaemonLink},
-    grpc::p2p_client::P2pClient,
+    grpc::peer_client::PeerClient,
     BevyMessage, TonicMessage,
 };
 
 pub struct Client {
     // we want a channel here from our server
-    pub peer: P2pClient<Channel>,
+    pub peer: PeerClient<Channel>,
 
     pub bevy: BevyLink,
 
@@ -18,6 +18,18 @@ pub struct Client {
 }
 
 impl Client {
+    pub async fn new(
+        bevy_link: BevyLink,
+        daemon_link: DaemonLink,
+        peer_addr: String,
+    ) -> Result<Self> {
+        Ok(Client {
+            bevy: bevy_link,
+            daemon: daemon_link,
+            peer: PeerClient::connect(peer_addr).await?,
+        })
+    }
+
     pub async fn run(mut self) {
         while let Some(message) = self.bevy.receiver.recv().await {
             match message {

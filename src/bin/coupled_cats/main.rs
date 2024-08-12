@@ -1,33 +1,22 @@
-use core::panic;
 use std::{net::SocketAddr, str::FromStr};
 
 use bevy::{log::error, prelude::*};
 use color_eyre::eyre::Result;
 use coupled_cats::{
-    client::client::Client,
-    daemon::daemon::Daemon,
-    grpc::{p2p_client::P2pClient, p2p_server::P2pServer, P2pHeartbeatReq},
-    BevyLink, BevyMessage, ClientLink, ClientMessage, CoupledCats, DaemonLink, DaemonMessage,
-    TonicLink, TonicMessage,
+    client::client::Client, daemon::daemon::Daemon, grpc::PeerHeartbeatReq, BevyLink, BevyMessage,
+    ClientLink, ClientMessage, CoupledCats, DaemonLink, DaemonMessage, TonicLink, TonicMessage,
 };
 use tokio::sync::mpsc;
-use tonic::{transport::Server, IntoRequest};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // create bridge
-    // let (bevy_sender, mut tonic_receiver) = mpsc::channel::<BevyMessage>(100);
-    // let (tonic_sender, mut bevy_receiver) = mpsc::channel::<TonicMessage>(100);
-    //
-    // let daemon_addr: SocketAddr = "[::1]:50051".parse()?;
     //NOTE: create the links
-    let (tonic_sender, mut tonic_receiver) = mpsc::channel::<TonicMessage>(100);
-    let (bevy_sender, mut bevy_receiver) = mpsc::channel::<BevyMessage>(100);
+    let (tonic_sender, tonic_receiver) = mpsc::channel::<TonicMessage>(100);
+    let (bevy_sender, bevy_receiver) = mpsc::channel::<BevyMessage>(100);
 
-    let (client_sender, mut client_receiver) = mpsc::channel::<ClientMessage>(100);
-    let (daemon_sender, mut daemon_receiver) = mpsc::channel::<DaemonMessage>(100);
+    let (client_sender, client_receiver) = mpsc::channel::<ClientMessage>(100);
+    let (daemon_sender, daemon_receiver) = mpsc::channel::<DaemonMessage>(100);
 
-    // spawn daemon
     tokio::spawn(async move {
         Daemon::run(
             ClientLink {
@@ -39,25 +28,26 @@ async fn main() -> Result<()> {
         .await;
     });
 
-    // spawn client
     tokio::spawn(async move {
-        let client = Client {
-            bevy: BevyLink {
+        let client = match Client::new(
+            BevyLink {
                 sender: tonic_sender,
                 receiver: bevy_receiver,
             },
-            daemon: DaemonLink {
+            DaemonLink {
                 sender: client_sender,
                 receiver: daemon_receiver,
             },
-            peer: match P2pClient::connect("http://[::1]:50051").await {
-                Ok(conn) => conn,
-                Err(err) => {
-                    //TODO: log and print
-                    println!("{:#?}", err);
-                    return;
-                }
-            },
+            String::from("http://[::1]:50051"),
+        )
+        .await
+        {
+            Ok(conn) => conn,
+            Err(err) => {
+                //TODO: log and print
+                println!("{:#?}", err);
+                return;
+            }
         };
 
         client.run().await;
@@ -80,7 +70,7 @@ async fn main() -> Result<()> {
 fn send_message_to_tonic(bridge: Res<TonicLink>) {
     match bridge
         .sender
-        .try_send(BevyMessage::Heartbeat(P2pHeartbeatReq {
+        .try_send(BevyMessage::Heartbeat(PeerHeartbeatReq {
             name: "Bevy".to_string(),
         })) {
         Ok(_) => {}

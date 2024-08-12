@@ -1,14 +1,10 @@
-use crate::{
-    bridge::ClientLink,
-    grpc::{local_server::Local, LocalHeartbeatReq, LocalHeartbeatRes},
-};
+use crate::
+    grpc::{local_server::Local, LocalHeartbeatReq, LocalHeartbeatRes};
 use log::trace;
 use tonic::{Request, Response, Status};
 
 #[derive(Debug)]
-pub struct MyLocalServer {
-    pub client: ClientLink,
-}
+pub struct MyLocalServer;
 
 #[tonic::async_trait]
 impl Local for MyLocalServer {

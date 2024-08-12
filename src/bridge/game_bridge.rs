@@ -2,14 +2,14 @@ use tokio::sync::mpsc;
 
 use bevy::prelude::Resource;
 
-use crate::grpc::{P2pHeartbeatReq, P2pHeartbeatRes};
+use crate::grpc::{PeerHeartbeatReq, PeerHeartbeatRes};
 
 pub enum BevyMessage {
-    Heartbeat(P2pHeartbeatReq),
+    Heartbeat(PeerHeartbeatReq),
 }
 
 pub enum TonicMessage {
-    Heartbeat(P2pHeartbeatRes),
+    Heartbeat(PeerHeartbeatRes),
 }
 
 // this would be how it looks on the bevy side

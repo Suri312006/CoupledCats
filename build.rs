@@ -4,7 +4,7 @@ fn main() {
         .protoc_arg("--experimental_allow_proto3_optional")
         .compile(
             &[
-                "./proto/p2p.proto",
+                "./proto/peer.proto",
                 "./proto/local.proto",
                 "./proto/matchmaker.proto",
             ],

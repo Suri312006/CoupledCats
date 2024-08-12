@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package coupledcats;
+
+message PeerHeartbeatReq{
+    string name = 1;
+}
+
+message PeerHeartbeatRes{
+    string reply = 1;
+}
+
+service Peer{
+    rpc Heartbeat(PeerHeartbeatReq) returns (PeerHeartbeatRes);
+}
