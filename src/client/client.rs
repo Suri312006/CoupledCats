@@ -1,8 +1,5 @@
 // this client should connect to the other peers server server
 
-use std::sync::mpsc;
-
-use color_eyre::eyre::Result;
 use tonic::transport::Channel;
 
 use crate::{
@@ -20,13 +17,6 @@ pub struct Client {
     pub daemon: DaemonLink,
 }
 
-// impl Client {
-//     pub async fn init(addr: String) -> Result<Self> {
-//         Ok(Client {
-//             0: P2pClient::connect(addr).await?,
-//         })
-//     }
-// }
 impl Client {
     pub async fn run(mut self) {
         while let Some(message) = self.bevy.receiver.recv().await {
@@ -48,7 +38,7 @@ impl Client {
                         }
                         Err(err) => {
                             //TODO: log this guy
-                            eprintln!("{}", err);
+                            eprintln!("LMAO:{}", err);
                         }
                     }
                 }

@@ -16,6 +16,7 @@ impl Local for MyLocalServer {
         &self,
         request: Request<LocalHeartbeatReq>,
     ) -> Result<Response<LocalHeartbeatRes>, Status> {
+        println!("request received!!!");
         trace!("Heartbeat recieved from {}", request.into_inner().name);
         Ok(Response::new(LocalHeartbeatRes {
             reply: "success".into(),

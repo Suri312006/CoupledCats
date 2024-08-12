@@ -4,10 +4,10 @@ use tonic::{Request, Response, Status};
 use crate::grpc::{p2p_server::P2p, P2pHeartbeatReq, P2pHeartbeatRes};
 
 #[derive(Debug)]
-pub struct P2PServer;
+pub struct MyP2PServer;
 
 #[tonic::async_trait]
-impl P2p for P2PServer {
+impl P2p for MyP2PServer {
     async fn heartbeat(
         &self,
         request: Request<P2pHeartbeatReq>,

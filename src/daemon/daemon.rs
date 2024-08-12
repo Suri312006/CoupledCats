@@ -2,13 +2,16 @@ use std::net::SocketAddr;
 
 use tonic::transport::Server;
 
-use crate::{bridge::ClientLink, grpc::local_server::LocalServer};
+use crate::{
+    bridge::ClientLink,
+    grpc::{local_server::LocalServer, p2p_server::P2pServer},
+};
 
-use super::server::{local::MyLocalServer, p2p::P2PServer};
+use super::server::{local::MyLocalServer, p2p::MyP2PServer};
 
 pub struct Daemon {
     pub local: MyLocalServer,
-    pub peer: P2PServer,
+    pub peer: MyP2PServer,
 }
 
 impl Daemon {
@@ -17,6 +20,7 @@ impl Daemon {
             .add_service(LocalServer::new(MyLocalServer {
                 client: client_link,
             }))
+            .add_service(P2pServer::new(MyP2PServer {}))
             .serve(addr)
             .await;
 
