@@ -3,13 +3,16 @@ use std::{net::SocketAddr, str::FromStr};
 use bevy::{log::error, prelude::*};
 use color_eyre::eyre::Result;
 use coupled_cats::{
-    client::client::Client, daemon::daemon::Daemon, grpc::PeerHeartbeatReq, BevyLink, BevyMessage,
-    ClientLink, ClientMessage, CoupledCats, DaemonLink, DaemonMessage, TonicLink, TonicMessage,
+    client::client::Client, daemon::daemon::Daemon, grpc::PeerHeartbeatReq, log, BevyLink,
+    BevyMessage, ClientLink, ClientMessage, CoupledCats, DaemonLink, DaemonMessage, TonicLink,
+    TonicMessage,
 };
 use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    log::setup()?;
+
     //NOTE: create the links
     let (tonic_sender, tonic_receiver) = mpsc::channel::<TonicMessage>(100);
     let (bevy_sender, bevy_receiver) = mpsc::channel::<BevyMessage>(100);
