@@ -2,8 +2,8 @@ use log::trace;
 use tonic::{Request, Response, Status};
 
 use crate::{
+    bridge::ClientLink,
     grpc::{peer_server::Peer, PeerHeartbeatReq, PeerHeartbeatRes},
-    ClientLink,
 };
 
 #[derive(Debug)]

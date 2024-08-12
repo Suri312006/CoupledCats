@@ -1,13 +1,13 @@
-mod bridge;
+mod client; // do something with this later (rename)
+mod daemon; // rename
 mod game;
-mod utils;
 
-pub mod client;
-pub mod daemon;
+pub mod bridge;
+pub mod utils;
 pub mod grpc {
     tonic::include_proto!("coupledcats");
 }
 
-pub use bridge::*;
+pub use daemon::*;
+pub use client::*;
 pub use game::*;
-pub use utils::*;

@@ -33,7 +33,7 @@ serde_json = "1.0"
 
 # logging
 log = "0.4"
-fern = "0.6"
+fern = {version= "0.6" , features = ["colored"]}
 
 color-eyre = "0.6"
 humantime = "2.1.0"

@@ -1,6 +1,8 @@
 use std::net::SocketAddr;
 
-use tonic::transport::Server;
+use color_eyre::eyre::Result;
+use log::error;
+use tonic::transport::{server::Router, Server};
 
 use crate::{
     bridge::ClientLink,
@@ -10,26 +12,24 @@ use crate::{
 use super::server::{local::MyLocalServer, peer::MyPeerServer};
 
 pub struct Daemon {
-    pub local: MyLocalServer,
-    pub peer: MyPeerServer,
+    addr: SocketAddr,
+    router: Router,
 }
 
 impl Daemon {
-    pub async fn run(client_link: ClientLink, addr: SocketAddr) {
-        let result = Server::builder()
+    pub async fn new(client_link: ClientLink, addr: SocketAddr) -> Self {
+        let router = Server::builder()
             .add_service(LocalServer::new(MyLocalServer {}))
             .add_service(PeerServer::new(MyPeerServer {
                 client: client_link,
-            }))
-            .serve(addr)
-            .await;
+            }));
 
-        match result {
+        Daemon { router, addr }
+    }
+    pub async fn run(self) {
+        match self.router.serve(self.addr).await {
             Ok(_) => {}
-            Err(err) => {
-                //TODO: log this guy and move on
-                eprintln!("{:#?}", err);
-            }
+            Err(err) => error!("{err:#?}"),
         }
     }
 }

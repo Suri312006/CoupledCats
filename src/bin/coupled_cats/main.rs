@@ -1,17 +1,23 @@
 use std::{net::SocketAddr, str::FromStr};
 
-use bevy::{log::error, prelude::*};
+use bevy::prelude::*;
 use color_eyre::eyre::Result;
 use coupled_cats::{
-    client::client::Client, daemon::daemon::Daemon, grpc::PeerHeartbeatReq, log, BevyLink,
-    BevyMessage, ClientLink, ClientMessage, CoupledCats, DaemonLink, DaemonMessage, TonicLink,
-    TonicMessage,
+    bridge::{
+        BevyLink, BevyMessage, ClientLink, ClientMessage, DaemonLink, DaemonMessage, TonicLink,
+        TonicMessage,
+    },
+    Client,
+    grpc::PeerHeartbeatReq,
+    utils::meow,
+    CoupledCats, Daemon,
 };
+use log::error;
 use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    log::setup()?;
+    meow::setup()?;
 
     //NOTE: create the links
     let (tonic_sender, tonic_receiver) = mpsc::channel::<TonicMessage>(100);
@@ -21,7 +27,7 @@ async fn main() -> Result<()> {
     let (daemon_sender, daemon_receiver) = mpsc::channel::<DaemonMessage>(100);
 
     tokio::spawn(async move {
-        Daemon::run(
+        let daemon = Daemon::new(
             ClientLink {
                 sender: daemon_sender,
                 receiver: client_receiver,
@@ -29,6 +35,8 @@ async fn main() -> Result<()> {
             SocketAddr::from_str("[::1]:50051").expect("wrong socket addr"),
         )
         .await;
+
+        daemon.run().await;
     });
 
     tokio::spawn(async move {
@@ -47,8 +55,7 @@ async fn main() -> Result<()> {
         {
             Ok(conn) => conn,
             Err(err) => {
-                //TODO: log and print
-                println!("{:#?}", err);
+                error!("{err}");
                 return;
             }
         };
@@ -77,7 +84,7 @@ fn send_message_to_tonic(bridge: Res<TonicLink>) {
             name: "Bevy".to_string(),
         })) {
         Ok(_) => {}
-        Err(err) => error!("{:#?}", err),
+        Err(err) => error!("{err}"),
     }
 }
 
@@ -85,7 +92,7 @@ fn receive_message_from_tonic(mut bridge: ResMut<TonicLink>) {
     if let Ok(message) = bridge.receiver.try_recv() {
         match message {
             TonicMessage::Heartbeat(reply) => {
-                println!("Received message from server: {}", reply.reply);
+                trace!("Recieved message from server: {}", reply.reply);
             }
         }
     }

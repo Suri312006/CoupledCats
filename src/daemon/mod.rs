@@ -1,3 +1,4 @@
-pub mod daemon;
-
+mod daemon;
 mod server;
+
+pub use daemon::*;
