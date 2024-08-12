@@ -1,18 +1,31 @@
-use tonic::{Request, Response, Status};
+use std::net::SocketAddr;
 
-use crate::grpc::{hello_service_server::HelloService, HelloReq, HelloRes};
+use tonic::transport::Server;
 
-#[derive(Debug)]
-pub struct MyGreeter;
+use crate::{bridge::ClientLink, grpc::local_server::LocalServer};
 
-#[tonic::async_trait]
-impl HelloService for MyGreeter {
-    async fn say_hello(&self, req: Request<HelloReq>) -> Result<Response<HelloRes>, Status> {
-        println!("req recieved");
-        let reply = HelloRes {
-            reply: format!("you got a small dick lmao {}", req.into_inner().name),
-        };
+use super::server::{local::MyLocalServer, p2p::P2PServer};
 
-        Ok(Response::new(reply))
+pub struct Daemon {
+    pub local: MyLocalServer,
+    pub peer: P2PServer,
+}
+
+impl Daemon {
+    pub async fn run(client_link: ClientLink, addr: SocketAddr) {
+        let result = Server::builder()
+            .add_service(LocalServer::new(MyLocalServer {
+                client: client_link,
+            }))
+            .serve(addr)
+            .await;
+
+        match result {
+            Ok(_) => {}
+            Err(err) => {
+                //TODO: log this guy and move on
+                eprintln!("{:#?}", err);
+            }
+        }
     }
 }

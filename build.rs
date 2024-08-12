@@ -3,7 +3,11 @@ fn main() {
         .build_client(true)
         .protoc_arg("--experimental_allow_proto3_optional")
         .compile(
-            &["./proto/hello.proto"],
+            &[
+                "./proto/p2p.proto",
+                "./proto/local.proto",
+                "./proto/matchmaker.proto",
+            ],
             // this is where our proto files are
             &["./proto"],
         )

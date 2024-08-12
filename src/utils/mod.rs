@@ -1,3 +1,1 @@
-mod bridge;
-
-pub use bridge::*;
+pub mod log;

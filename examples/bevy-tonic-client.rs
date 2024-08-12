@@ -41,7 +41,6 @@ impl TonicBridge {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-
     let (bevy_sender, mut tonic_receiver) = mpsc::channel::<BevyMessage>(100);
     let (tonic_sender, bevy_receiver) = mpsc::channel::<TonicMessage>(100);
 

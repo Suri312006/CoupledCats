@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package coupledcats;
+
+message MatchmakerHeartbeatReq{
+    string name = 1;
+}
+
+message MatchmakerHeartbeatRes{
+    string reply = 1;
+}
+
+service MatchMaker{
+    rpc Heartbeat(MatchmakerHeartbeatReq) returns (MatchmakerHeartbeatRes);
+}
