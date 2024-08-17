@@ -6,7 +6,7 @@ use bevy::{
 };
 
 use super::{
-    animate::animate_sprite,
+    animate::{animate_sprite, update_texture_from_state},
     cat::{Bounds, Cat, Velocity},
 };
 pub struct CoupledCats;
@@ -40,7 +40,10 @@ impl CoupledCats {
             // .add_plugins(LogDiagnosticsPlugin::default())
             // .add_plugins(FrameTimeDiagnosticsPlugin::default()) frame rate diagnostics
             .add_systems(Startup, Cat::setup)
-            .add_systems(Update, (move_window, animate_sprite))
+            .add_systems(
+                Update,
+                (move_window, animate_sprite, update_texture_from_state),
+            )
             .run();
     }
 }

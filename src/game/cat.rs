@@ -7,12 +7,25 @@ pub struct Cat {}
 
 #[derive(Bundle)]
 struct CatBundle {
+    state: CatState,
     velocity: Velocity,
     bounds: Bounds,
     sprite: SpriteBundle,
     texture_atlas: TextureAtlas,
     animation_timer: AnimationTimer,
     animation_indicies: AnimationIndicies,
+}
+
+#[derive(Component)]
+pub enum CatState {
+    IDLE,
+    LICK,
+    GROOM,
+    WALK,
+    SLEEP,
+    TAP,
+    JUMP,
+    STRECH,
 }
 
 #[derive(Component, Default)]
@@ -42,6 +55,7 @@ impl Cat {
 
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
+            state: CatState::IDLE,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
             sprite: SpriteBundle {
