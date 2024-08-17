@@ -11,3 +11,20 @@
 - [ ] figure out all the different states of the cat
 - [ ] entire state machine with the different interactions of the cat
 
+
+# cat behaviors
+- [ ] meow when message received
+- [ ] when message arrives, wait 10 seconds, and if theres no click, drag mouse around
+
+
+# p2p thing
+- [ ] send messages to each other
+- [ ] figure out a connection mechanism
+
+
+# bevy
+- [ ] figure out how to emmit events when bridge receives something
+- [ ] state machine to handle all the things
+- [ ] figure out movement for the cat (abstracted really nicely)
+
+

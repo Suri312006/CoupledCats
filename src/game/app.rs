@@ -27,7 +27,7 @@ impl CoupledCats {
             ..default()
         };
 
-        app.insert_resource(ClearColor(Color::NONE))
+        app.insert_resource(ClearColor(Color::WHITE))
             .add_plugins(
                 DefaultPlugins
                     .set(WindowPlugin {

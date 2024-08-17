@@ -28,10 +28,17 @@ impl Cat {
         mut texture_atlas_layout: ResMut<Assets<TextureAtlasLayout>>,
     ) {
         //TODO: bind it to one monitor
-        let texture = asset_server.load("fox-run.png");
-        let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
+
+        // this was for fox run
+        // let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
+        // let texture_atlas_layout = texture_atlas_layout.add(layout);
+        // let animation_indicies = AnimationIndicies { first: 1, last: 5 };
+        // let texture = asset_server.load("fox-run.png");
+
+        let texture = asset_server.load("cat/groom-1.png");
+        let layout = TextureAtlasLayout::from_grid(UVec2::new(32, 21), 4, 1, None, None);
         let texture_atlas_layout = texture_atlas_layout.add(layout);
-        let animation_indicies = AnimationIndicies { first: 1, last: 5 };
+        let animation_indicies = AnimationIndicies { first: 0, last: 3 };
 
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
