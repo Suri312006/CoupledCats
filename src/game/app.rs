@@ -39,11 +39,8 @@ impl CoupledCats {
             // logging stuff
             // .add_plugins(LogDiagnosticsPlugin::default())
             // .add_plugins(FrameTimeDiagnosticsPlugin::default()) frame rate diagnostics
-            .add_systems(Startup, Cat::setup)
-            .add_systems(
-                Update,
-                (move_window, animate_sprite, update_texture_from_state),
-            )
+            .add_systems(Startup, (Cat::setup, update_texture_from_state).chain())
+            .add_systems(Update, (move_window, animate_sprite))
             .run();
     }
 }
