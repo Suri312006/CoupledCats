@@ -16,7 +16,7 @@ struct CatBundle {
     animation_indicies: AnimationIndicies,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub enum CatState {
     IDLE,
     LICK,
@@ -80,7 +80,7 @@ impl Cat {
 
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
-            state: CatState::STRECH,
+            state: CatState::JUMP,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
             sprite: SpriteBundle {

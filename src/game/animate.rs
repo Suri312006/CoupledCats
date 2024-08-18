@@ -1,5 +1,9 @@
+use rand::prelude::*;
+use std::collections::VecDeque;
+
 use bevy::{prelude::*, render::render_resource::Texture};
 use color_eyre::eyre::Context;
+use log::info;
 
 use super::cat::{CatImageHandles, CatState};
 
@@ -39,6 +43,8 @@ pub fn update_texture_from_state(
         &mut AnimationIndicies,
     )>,
 ) {
+    // see if there is some new state thats availible to transfer into.
+
     let (atlas, texture, state, animation_indicies) = query
         .get_single_mut()
         .with_context(|| {
@@ -47,6 +53,10 @@ pub fn update_texture_from_state(
             err_msg
         })
         .unwrap();
+
+    if animation_indicies.last != atlas.index {
+        return;
+    }
 
     match state.into_inner() {
         CatState::IDLE => {
@@ -170,6 +180,33 @@ pub fn update_texture_from_state(
             };
             *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 7 };
         }
-        _ => {}
+    }
+}
+
+pub fn randomize_state(mut query: Query<&mut CatState>) {
+    let mut state = match query.get_single_mut() {
+        Ok(state) => state,
+        Err(err) => {
+            error!("{err:#?}");
+            return;
+        }
+    };
+
+    let mut rng = rand::thread_rng();
+    let y = rng.gen_range(0..=7);
+
+    match y {
+        0 => *state = CatState::IDLE,
+        1 => *state = CatState::LICK,
+        2 => *state = CatState::GROOM,
+        3 => *state = CatState::JUMP,
+        4 => *state = CatState::WALK,
+        5 => *state = CatState::SLEEP,
+        6 => *state = CatState::TAP,
+        7 => *state = CatState::STRECH,
+        _ => {
+            error!("did not expect rand to generate something thats not 0-7");
+            *state = CatState::IDLE;
+        }
     }
 }

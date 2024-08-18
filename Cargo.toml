@@ -37,6 +37,7 @@ fern = {version= "0.6" , features = ["colored"]}
 
 color-eyre = "0.6"
 humantime = "2.1.0"
+rand = "0.8.5"
 
 [build-dependencies]
 tonic-build = "0.12"

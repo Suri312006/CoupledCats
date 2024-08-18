@@ -6,7 +6,7 @@ use bevy::{
 };
 
 use super::{
-    animate::{animate_sprite, update_texture_from_state},
+    animate::{animate_sprite, randomize_state, update_texture_from_state},
     cat::{Bounds, Cat, Velocity},
 };
 pub struct CoupledCats;
@@ -27,7 +27,7 @@ impl CoupledCats {
             ..default()
         };
 
-        app.insert_resource(ClearColor(Color::WHITE))
+        app.insert_resource(ClearColor(Color::NONE))
             .add_plugins(
                 DefaultPlugins
                     .set(WindowPlugin {
@@ -39,8 +39,16 @@ impl CoupledCats {
             // logging stuff
             // .add_plugins(LogDiagnosticsPlugin::default())
             // .add_plugins(FrameTimeDiagnosticsPlugin::default()) frame rate diagnostics
-            .add_systems(Startup, (Cat::setup, update_texture_from_state).chain())
-            .add_systems(Update, (move_window, animate_sprite))
+            .add_systems(Startup, Cat::setup)
+            .add_systems(
+                Update,
+                (
+                    move_window,
+                    animate_sprite,
+                    update_texture_from_state,
+                    randomize_state,
+                ),
+            )
             .run();
     }
 }
@@ -74,7 +82,7 @@ fn move_window(
 
     window
         .size()
-        .set(Box::new(Vec2::new(200.0, 200.0)))
+        .set(Box::new(Vec2::new(100.0, 100.0)))
         .map_err(|err| {
             println!("{err:#?}");
         })

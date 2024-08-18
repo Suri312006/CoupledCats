@@ -24,17 +24,3 @@ pub struct BevyLink {
     pub receiver: mpsc::Receiver<BevyMessage>,
 }
 
-// impl Bridge {
-//     pub fn send_message_to_tonic(&self, message: BevyMessage) -> Result<()> {
-//         match self.sender.try_send(message) {
-//             Ok(_) => Ok(()),
-//             Err(err) => Err(eyre!(err)),
-//         }
-//     }
-//     pub fn receive_message_from_tonic(&mut self) -> Option<TonicMessage> {
-//         match self.receiver.try_recv() {
-//             Ok(message) => Some(message),
-//             Err(_) => None,
-//         }
-//     }
-// }
