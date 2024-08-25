@@ -1,12 +1,16 @@
 use bevy::prelude::*;
 
-use super::animate::{AnimationIndicies, AnimationTimer};
+use super::{
+    animate::{AnimationIndicies, AnimationTimer},
+    state::CatState,
+};
 
 #[derive(Component)]
 pub struct Cat {}
 
 #[derive(Bundle)]
 struct CatBundle {
+    state_queue: StateQueue<CatState>,
     state: CatState,
     velocity: Velocity,
     bounds: Bounds,
@@ -16,17 +20,8 @@ struct CatBundle {
     animation_indicies: AnimationIndicies,
 }
 
-#[derive(Component, Debug)]
-pub enum CatState {
-    IDLE,
-    LICK,
-    GROOM,
-    WALK,
-    SLEEP,
-    TAP,
-    JUMP,
-    STRECH,
-}
+#[derive(Component, Default)]
+pub struct StateQueue<T>(pub Vec<T>);
 
 #[derive(Resource, Clone)]
 pub struct CatImageHandles {
@@ -54,12 +49,6 @@ impl Cat {
     ) {
         //TODO: bind it to one monitor
 
-        // this was for fox run
-        // let layout = TextureAtlasLayout::from_grid(UVec2::splat(24), 7, 1, None, None);
-        // let texture_atlas_layout = texture_atlas_layout.add(layout);
-        // let animation_indicies = AnimationIndicies { first: 1, last: 5 };
-        // let texture = asset_server.load("fox-run.png");
-
         let texture = asset_server.load("cat/groom.png");
         let layout = TextureAtlasLayout::from_grid(UVec2::new(32, 21), 4, 1, None, None);
         let texture_atlas_layout = texture_atlas_layout.add(layout);
@@ -80,6 +69,7 @@ impl Cat {
 
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
+            state_queue:  StateQueue(vec![CatState::JUMP]),
             state: CatState::JUMP,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
