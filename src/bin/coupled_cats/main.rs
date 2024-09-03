@@ -78,7 +78,7 @@ struct DaemonLink(Bridge<BevyDaemonMessage, DaemonMessage>);
 fn send_heartbeat(bridge: Res<ClientLink>) {
     match bridge.0.sender.try_send(BevyClientMessage::HeartbeatReq) {
         Ok(_) => {
-            info!("Heartbeat sent");
+            trace!("Heartbeat sent");
         }
         Err(err) => {
             error!("{err}");
@@ -90,7 +90,7 @@ fn receive_heartbeat(mut bridge: ResMut<ClientLink>) {
     match bridge.0.receiver.try_recv() {
         Ok(res) => match res {
             ClientMessage::HeartbeatRes(reply) => {
-                info!("{reply}")
+                trace!("{reply}")
             }
         },
 

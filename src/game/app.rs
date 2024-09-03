@@ -50,9 +50,12 @@ impl CoupledCats {
                 (animate_sprite, cat_sprite_tick, move_window).chain(),
             )
             //state
-            .add_systems(Update, (update_state_from_queue, randomize_state).chain()) //// not remove this chain
+            .add_systems(
+                Update,
+                (update_state_from_queue, update_texture_from_state).chain(),
+            ) //// not remove this chain
             //texture
-            .add_systems(Update, update_texture_from_state)
+            .add_systems(Update, randomize_state)
             .run();
     }
 }

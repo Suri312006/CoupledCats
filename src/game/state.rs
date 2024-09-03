@@ -40,7 +40,7 @@ pub fn update_state_from_queue(
     let state = state.into_inner();
 
     for _tick in ev_sprite_tick.read() {
-        info!("received");
+        info!("received tick");
         *state = queue
             .0
             .pop()
@@ -60,34 +60,49 @@ pub fn update_state_from_queue(
 }
 
 pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
-    let mut state = match query.get_single_mut() {
-        Ok(state) => state,
+    let mut queue = match query.get_single_mut() {
+        Ok(queue) => queue,
         Err(err) => {
             error!("{err:#?}");
             return;
         }
     };
 
-    let mut rng = rand::thread_rng();
-    let y = rng.gen_range(0..=7);
-
-    if state.0.len() > 10 {
+    if queue.0.len() > 10 {
         return;
     }
 
-    match y {
-        0 => state.0.push(CatState::IDLE),
-        1 => state.0.push(CatState::LICK),
-        2 => state.0.push(CatState::GROOM),
-        3 => state.0.push(CatState::JUMP),
-        4 => state.0.push(CatState::WALK),
-        5 => state.0.push(CatState::SLEEP),
-        6 => state.0.push(CatState::TAP),
-        7 => state.0.push(CatState::STRECH),
+    let rand_state = match rand::thread_rng().gen_range(0..=7) {
+        0 => CatState::IDLE,
+        1 => CatState::LICK,
+        2 => CatState::GROOM,
+        3 => CatState::JUMP,
+        4 => CatState::WALK,
+        5 => CatState::SLEEP,
+        6 => CatState::TAP,
+        7 => CatState::STRECH,
         _ => {
             error!("did not expect rand to generate something thats not 0-7");
-
-            state.0.push(CatState::STRECH);
+            CatState::IDLE
         }
-    }
+    };
+
+    let curr = queue.0.pop().unwrap_or(CatState::IDLE);
+    let rng = rand::thread_rng();
+
+    let next: CatState = match curr {
+        CatState::IDLE => {}
+        CatState::LICK => {}
+        CatState::GROOM => {}
+        CatState::JUMP => {}
+        CatState::WALK => {}
+        CatState::SLEEP => match rng.gen_range(0..100) {
+            0..95 => CatState::SLEEP,
+            _ => CatState::STRECH,
+        },
+        CatState::TAP => {
+            // nothing should ever lead to here
+        }
+        CatState::STRECH => {}
+    };
 }
