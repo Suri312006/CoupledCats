@@ -28,3 +28,7 @@
 - [ ] figure out movement for the cat (abstracted really nicely)
 
 
+
+# SYSTEM todo
+- [ ] rewrite the systems not in terms of what they do but try not to 
+rely on multithreading as much
