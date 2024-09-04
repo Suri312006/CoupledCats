@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use super::{animate::AnimationIndicies, SpriteTick};
 use bevy::prelude::*;
 use color_eyre::eyre::{Context, ContextCompat};
@@ -17,7 +19,7 @@ pub enum CatState {
 }
 
 #[derive(Component, Default)]
-pub struct StateQueue<T>(pub Vec<T>);
+pub struct StateQueue<T>(pub VecDeque<T>);
 
 pub fn update_state_from_queue(
     mut ev_sprite_tick: EventReader<SpriteTick>,
@@ -43,7 +45,7 @@ pub fn update_state_from_queue(
         info!("received tick");
         *state = queue
             .0
-            .pop()
+            .pop_front()
             .with_context(|| {
                 let err = "Queue for cat is empty";
                 error!(err);
@@ -68,41 +70,51 @@ pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
         }
     };
 
-    if queue.0.len() > 10 {
+    if queue.0.len() > 20 {
         return;
     }
 
-    let rand_state = match rand::thread_rng().gen_range(0..=7) {
-        0 => CatState::IDLE,
-        1 => CatState::LICK,
-        2 => CatState::GROOM,
-        3 => CatState::JUMP,
-        4 => CatState::WALK,
-        5 => CatState::SLEEP,
-        6 => CatState::TAP,
-        7 => CatState::STRECH,
-        _ => {
-            error!("did not expect rand to generate something thats not 0-7");
-            CatState::IDLE
-        }
-    };
+    info!("{:#?}", queue.as_mut().0);
 
-    let curr = queue.0.pop().unwrap_or(CatState::IDLE);
-    let rng = rand::thread_rng();
+    let curr = queue.0.pop_back().unwrap_or(CatState::IDLE);
+    let mut rng = rand::thread_rng();
 
     let next: CatState = match curr {
-        CatState::IDLE => {}
-        CatState::LICK => {}
-        CatState::GROOM => {}
-        CatState::JUMP => {}
-        CatState::WALK => {}
+        CatState::IDLE => match rng.gen_range(0..100) {
+            0..80 => CatState::IDLE,
+            70..90 => CatState::GROOM,
+            90..95 => CatState::WALK,
+            _ => CatState::SLEEP,
+        },
+        CatState::LICK => match rng.gen_range(0..100) {
+            0..50 => CatState::LICK,
+            0..75 => CatState::GROOM,
+            _ => CatState::IDLE,
+        },
+        CatState::GROOM => match rng.gen_range(0..100) {
+            0..25 => CatState::GROOM,
+            25..50 => CatState::LICK,
+            _ => CatState::WALK,
+        },
+        CatState::JUMP => match rng.gen_range(0..100) {
+            _ => CatState::WALK,
+        },
+        CatState::WALK => match rng.gen_range(0..100) {
+            0..75 => CatState::WALK,
+            75..85 => CatState::JUMP,
+            _ => CatState::IDLE,
+        },
         CatState::SLEEP => match rng.gen_range(0..100) {
             0..95 => CatState::SLEEP,
             _ => CatState::STRECH,
         },
         CatState::TAP => {
             // nothing should ever lead to here
+            CatState::IDLE
         }
-        CatState::STRECH => {}
+        CatState::STRECH => CatState::IDLE,
     };
+
+    queue.as_mut().0.push_back(curr);
+    queue.as_mut().0.push_back(next);
 }

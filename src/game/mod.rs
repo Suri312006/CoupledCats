@@ -4,6 +4,8 @@ mod movement;
 mod state;
 mod texture;
 
+use std::collections::VecDeque;
+
 pub use app::*;
 
 use bevy::prelude::*;
@@ -68,7 +70,7 @@ impl Cat {
 
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
-            state_queue: StateQueue(vec![CatState::JUMP]),
+            state_queue: StateQueue(VecDeque::new()),
             state: CatState::JUMP,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
