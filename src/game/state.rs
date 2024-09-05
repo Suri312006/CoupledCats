@@ -74,16 +74,14 @@ pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
         return;
     }
 
-    info!("{:#?}", queue.as_mut().0);
-
     let curr = queue.0.pop_back().unwrap_or(CatState::IDLE);
     let mut rng = rand::thread_rng();
 
     let next: CatState = match curr {
         CatState::IDLE => match rng.gen_range(0..100) {
-            0..80 => CatState::IDLE,
-            70..90 => CatState::GROOM,
-            90..95 => CatState::WALK,
+            0..90 => CatState::IDLE,
+            90..93 => CatState::GROOM,
+            93..97 => CatState::WALK,
             _ => CatState::SLEEP,
         },
         CatState::LICK => match rng.gen_range(0..100) {
@@ -105,7 +103,7 @@ pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
             _ => CatState::IDLE,
         },
         CatState::SLEEP => match rng.gen_range(0..100) {
-            0..95 => CatState::SLEEP,
+            0..99 => CatState::SLEEP,
             _ => CatState::STRECH,
         },
         CatState::TAP => {
