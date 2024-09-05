@@ -1,10 +1,10 @@
-use super::{
-    animate::AnimationIndicies,
-    cat::{CatImageHandles, StateQueue},
-};
+use std::collections::VecDeque;
+
+use super::{animate::AnimationIndicies, SpriteTick};
 use bevy::prelude::*;
 use color_eyre::eyre::{Context, ContextCompat};
 use log::info;
+use rand::Rng;
 
 #[derive(Component, Debug)]
 pub enum CatState {
@@ -18,19 +18,19 @@ pub enum CatState {
     STRECH,
 }
 
-impl CatState {
-    pub fn insert_systems(app: &mut App) {}
-}
+#[derive(Component, Default)]
+pub struct StateQueue<T>(pub VecDeque<T>);
+
 pub fn update_state_from_queue(
+    mut ev_sprite_tick: EventReader<SpriteTick>,
     mut query: Query<(
         &mut TextureAtlas,
-        &mut Handle<Image>,
         &mut CatState,
         &mut StateQueue<CatState>,
         &mut AnimationIndicies,
     )>,
 ) {
-    let (atlas, texture, mut state, mut queue, animation_indicies) = query
+    let (atlas, state, mut queue, animation_indicies) = query
         .get_single_mut()
         .with_context(|| {
             let err_msg = "failed to update state due to weird query behavior";
@@ -39,184 +39,80 @@ pub fn update_state_from_queue(
         })
         .unwrap();
 
-    if animation_indicies.last != atlas.index {
-        return;
-    } else {
-        info!("what the fuck{:#?}", &state);
-        *state.into_inner() = queue
+    let state = state.into_inner();
+
+    for _tick in ev_sprite_tick.read() {
+        info!("received tick");
+        *state = queue
             .0
-            .pop()
+            .pop_front()
             .with_context(|| {
                 let err = "Queue for cat is empty";
                 error!(err);
                 err
             })
             .unwrap();
-
-        // return;
+        info!("what the fuck {:#?}", &state);
     }
+
+    // if animation_indicies.last != atlas.index {
+    //     return;
+    // } else {
+    // }
 }
 
-pub fn update_texture_from_state(
-    textures: Res<CatImageHandles>,
-    mut texture_atlas_layout: ResMut<Assets<TextureAtlasLayout>>,
-    mut query: Query<(
-        &mut TextureAtlas,
-        &mut Handle<Image>,
-        &mut CatState,
-        &mut StateQueue<CatState>,
-        &mut AnimationIndicies,
-    )>,
-) {
-    // see if there is some new state thats availible to transfer into.
+pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
+    let mut queue = match query.get_single_mut() {
+        Ok(queue) => queue,
+        Err(err) => {
+            error!("{err:#?}");
+            return;
+        }
+    };
 
-    let (atlas, texture, mut state, mut queue, animation_indicies) = query
-        .get_single_mut()
-        .with_context(|| {
-            let err_msg = "failed to update state due to weird query behavior";
-            error!(err_msg);
-            err_msg
-        })
-        .unwrap();
-
-    if animation_indicies.last != atlas.index {
+    if queue.0.len() > 20 {
         return;
-    } else {
-        // info!("what the fuck{:#?}", &state);
-        // *state.into_inner() = queue
-        //     .0
-        //     .pop()
-        //     .with_context(|| {
-        //         let err = "Queue for cat is empty";
-        //         error!(err);
-        //         err
-        //     })
-        //     .unwrap();
-
-        // return;
     }
 
-    match state.into_inner() {
-        CatState::IDLE => {
-            // maybe this isnt the best move, and i should just create a struct that has all the
-            // handles on startup, and we can dynamically assign them xd
-            *texture.into_inner() = textures.idle.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 16),
-                    4,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
-        }
+    let curr = queue.0.pop_back().unwrap_or(CatState::IDLE);
+    let mut rng = rand::thread_rng();
 
-        CatState::LICK => {
-            *texture.into_inner() = textures.lick.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 16),
-                    4,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
-        }
-
-        CatState::GROOM => {
-            *texture.into_inner() = textures.groom.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 16),
-                    4,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
-        }
-
-        CatState::JUMP => {
-            *texture.into_inner() = textures.jump.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 19),
-                    7,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 6 };
-        }
-
-        CatState::WALK => {
-            *texture.into_inner() = textures.walk.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 17),
-                    8,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 7 };
-        }
-
-        CatState::SLEEP => {
-            *texture.into_inner() = textures.sleep.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 15),
-                    4,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
-        }
-
+    let next: CatState = match curr {
+        CatState::IDLE => match rng.gen_range(0..100) {
+            0..90 => CatState::IDLE,
+            90..93 => CatState::GROOM,
+            93..97 => CatState::WALK,
+            _ => CatState::SLEEP,
+        },
+        CatState::LICK => match rng.gen_range(0..100) {
+            0..50 => CatState::LICK,
+            0..75 => CatState::GROOM,
+            _ => CatState::IDLE,
+        },
+        CatState::GROOM => match rng.gen_range(0..100) {
+            0..25 => CatState::GROOM,
+            25..50 => CatState::LICK,
+            _ => CatState::WALK,
+        },
+        CatState::JUMP => match rng.gen_range(0..100) {
+            _ => CatState::WALK,
+        },
+        CatState::WALK => match rng.gen_range(0..100) {
+            0..75 => CatState::WALK,
+            75..85 => CatState::JUMP,
+            _ => CatState::IDLE,
+        },
+        CatState::SLEEP => match rng.gen_range(0..100) {
+            0..99 => CatState::SLEEP,
+            _ => CatState::STRECH,
+        },
         CatState::TAP => {
-            *texture.into_inner() = textures.tap.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 16),
-                    6,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 5 };
+            // nothing should ever lead to here
+            CatState::IDLE
         }
+        CatState::STRECH => CatState::IDLE,
+    };
 
-        CatState::STRECH => {
-            *texture.into_inner() = textures.strech.clone();
-            *atlas.into_inner() = TextureAtlas {
-                layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
-                    UVec2::new(32, 16),
-                    8,
-                    1,
-                    None,
-                    None,
-                )),
-                index: 0 as usize,
-            };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 7 };
-        }
-    }
+    queue.as_mut().0.push_back(curr);
+    queue.as_mut().0.push_back(next);
 }
