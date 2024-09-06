@@ -1,5 +1,4 @@
 use bevy::prelude::Resource;
-use color_eyre::eyre::{bail, eyre, Result};
 use tokio::sync::mpsc;
 pub mod clientlink;
 pub mod serverlink;

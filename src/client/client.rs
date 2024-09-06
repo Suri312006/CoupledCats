@@ -38,7 +38,7 @@ impl Client {
                         .peer
                         .heartbeat(
                             PeerHeartbeatReq {
-                                name: "i dont fucking know".into(),
+                                name: "None".into(),
                             }
                             .into_request(),
                         )
@@ -46,12 +46,7 @@ impl Client {
                     {
                         Ok(res) => {
                             trace!("rending heartbeat response");
-                            match self
-                                .bevy
-                                .sender
-                                .send(ClientMessage::HeartbeatRes(res.into_inner().reply))
-                                .await
-                            {
+                            match self.bevy.sender.send(ClientMessage::HeartbeatRes).await {
                                 Ok(_) => {}
                                 Err(err) => {
                                     error!("{err:#?}");

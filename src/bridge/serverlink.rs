@@ -1,4 +1,8 @@
-use super::Message;
+use bevy::prelude::Resource;
+
+use super::{Bridge, Message};
+#[derive(Resource)]
+pub struct DaemonLink(pub Bridge<BevyDaemonMessage, DaemonMessage>);
 
 #[derive(Debug, Clone)]
 pub enum DaemonMessage {

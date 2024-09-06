@@ -1,10 +1,11 @@
-use std::collections::VecDeque;
-
-use super::{animate::AnimationIndicies, SpriteTick};
 use bevy::prelude::*;
+
 use color_eyre::eyre::{Context, ContextCompat};
 use log::info;
 use rand::Rng;
+use std::collections::VecDeque;
+
+use super::animate::{AnimationIndicies, SpriteTick};
 
 #[derive(Component, Debug)]
 pub enum CatState {

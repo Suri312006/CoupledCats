@@ -1,7 +1,9 @@
-use super::Message;
+use bevy::prelude::Resource;
+
+use super::{Bridge, Message};
 
 pub enum ClientMessage {
-    HeartbeatRes(String),
+    HeartbeatRes,
 }
 
 #[derive(Debug)]
@@ -11,3 +13,6 @@ pub enum BevyClientMessage {
 
 impl Message for ClientMessage {}
 impl Message for BevyClientMessage {}
+
+#[derive(Resource)]
+pub struct ClientLink(pub Bridge<BevyClientMessage, ClientMessage>);
