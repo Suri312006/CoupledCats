@@ -28,8 +28,8 @@ pub fn init_systems(app: &mut App) {
             Update,
             (
                 update_state_from_queue,
-                move_window,
                 update_texture_from_state,
+                move_window,
             )
                 .chain(),
         ) //// not remove this chain

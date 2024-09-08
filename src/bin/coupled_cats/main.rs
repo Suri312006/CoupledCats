@@ -18,10 +18,6 @@ use tokio::sync::mpsc::{self, error::TryRecvError};
 async fn main() -> Result<()> {
     meow::setup()?;
 
-    //NOTE: create the links
-    // let (tonic_sender, tonic_receiver) = mpsc::channel::<TonicMessage>(100);
-    // let (bevy_sender, bevy_receiver) = mpsc::channel::<BevyMessage>(100);
-    //
     let (client_sender, client_receiver) = mpsc::channel::<ClientMessage>(100);
     let (daemon_sender, daemon_receiver) = mpsc::channel::<DaemonMessage>(100);
     let (bevy_client_sender, bevy_client_receiver) = mpsc::channel::<BevyClientMessage>(100);
@@ -56,10 +52,6 @@ async fn main() -> Result<()> {
 
     let mut app = App::new();
 
-    // app.add_systems(Update, send_heartbeat);
-    app.add_systems(Update, receive_heartbeat);
-    // app.add_systems(Update, reply_heartbeat);
-    // app.add_systems(Update, receive_message_from_tonic);
     app.insert_resource(ClientLink(Bridge::new(bevy_client_sender, client_receiver)));
     app.insert_resource(DaemonLink(Bridge::new(bevy_daemon_sender, daemon_receiver)));
 
@@ -67,44 +59,3 @@ async fn main() -> Result<()> {
     CoupledCats::run(app);
     Ok(())
 }
-
-// fn send_heartbeat(bridge: Res<ClientLink>) {
-//     match bridge.0.sender.try_send(BevyClientMessage::HeartbeatReq) {
-//         Ok(_) => {
-//             trace!("Heartbeat sent");
-//         }
-//         Err(err) => {
-//             error!("{err}");
-//         }
-//     }
-// }
-
-fn receive_heartbeat(mut bridge: ResMut<ClientLink>) {
-    match bridge.0.receiver.try_recv() {
-        Ok(res) => match res {
-            ClientMessage::HeartbeatRes(reply) => {
-                trace!("{reply}")
-            }
-        },
-
-        Err(TryRecvError::Disconnected) => error!("disconnected"),
-        Err(TryRecvError::Empty) => {}
-    }
-}
-
-// fn reply_heartbeat(mut bridge: ResMut<DaemonLink>) {
-//     match bridge.0.receiver.try_recv() {
-//         Ok(msg) => match msg {
-//             DaemonMessage::Heartbeat => {
-//                 match bridge.0.sender.try_send(BevyDaemonMessage::Heartbeat) {
-//                     Ok(_) => trace!("sent heartbeat"),
-//                     Err(mpsc::error::TrySendError::Closed(_msg)) => error!("Channel disconnected"),
-//                     _ => {}
-//                 }
-//             }
-//         },
-//
-//         Err(TryRecvError::Disconnected) => error!("Channel disconnected"),
-//         _ => {}
-//     }
-// }

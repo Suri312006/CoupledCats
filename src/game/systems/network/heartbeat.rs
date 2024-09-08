@@ -2,7 +2,7 @@ use crate::bridge::{
     clientlink::{BevyClientMessage, ClientLink, ClientMessage},
     serverlink::{BevyDaemonMessage, DaemonLink, DaemonMessage},
 };
-use bevy::prelude::*;
+use bevy::{prelude::*, reflect::List};
 use log::error;
 use tokio::sync::mpsc::error::{TryRecvError, TrySendError};
 
@@ -20,22 +20,36 @@ pub struct HeartbeatBundle {
     pub timer: HeartbeatTimer,
 }
 
+impl Default for HeartbeatBundle {
+    fn default() -> Self {
+        HeartbeatBundle {
+            stack: HeartbeatStack(vec![()]),
+            timer: HeartbeatTimer(Timer::from_seconds(10.0, TimerMode::Repeating)),
+        }
+    }
+}
+
 // we want to listen for these events and handle them accordingly
 pub fn check_peer_heartbeat(
     time: Res<Time>,
-    mut query: Query<&mut HeartbeatTimer>,
+    mut query: Query<(&mut HeartbeatStack, &mut HeartbeatTimer)>,
     link: ResMut<ClientLink>,
 ) {
-    let mut timer = query
-        .get_single_mut()
-        .expect("unable to get heartbeat timer");
-    timer.tick(time.delta());
+    for (mut stack, mut timer) in &mut query {
+        timer.tick(time.delta());
 
-    if timer.just_finished() {
-        match link.0.sender.try_send(BevyClientMessage::HeartbeatReq) {
-            Err(TrySendError::Closed(_)) => error!("sender channel closed"),
-            _ => {}
-        };
+        if stack.0.len() > 10 {
+            error!("Other Cat dead!!");
+            return;
+        }
+
+        if timer.just_finished() {
+            stack.0.push(());
+            match link.0.sender.try_send(BevyClientMessage::HeartbeatReq) {
+                Err(TrySendError::Closed(_)) => error!("sender channel closed"),
+                _ => {}
+            };
+        }
     }
 }
 
@@ -56,10 +70,20 @@ pub fn reply_heartbeat(mut daemon_link: ResMut<DaemonLink>) {
     }
 }
 
-pub fn receive_heartbeat(mut network_tick: EventReader<NetworkEvent>) {
+pub fn receive_heartbeat(
+    mut query: Query<&mut HeartbeatStack>,
+    mut network_tick: EventReader<NetworkEvent>,
+) {
     for event in network_tick.read() {
         match event.0 {
-            ClientMessage::HeartbeatRes => {}
+            ClientMessage::HeartbeatRes => {
+                trace!("Received heartbeat response!");
+                let mut stack = query
+                    .get_single_mut()
+                    .expect("unable to access heartbeat stack");
+
+                stack.0.pop();
+            }
             _ => {}
         }
     }

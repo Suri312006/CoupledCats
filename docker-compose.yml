@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  p2p_instance1:
+    build: .
+    container_name: p2p_instance1
+    networks:
+      - house1_network
+      - internet_network
+
+  p2p_instance2:
+    build: .
+    container_name: p2p_instance2
+    networks:
+      - house2_network
+      - internet_network
+
+networks:
+  house1_network:
+    driver: bridge
+  house2_network:
+    driver: bridge
+  internet_network:
+    driver: bridge

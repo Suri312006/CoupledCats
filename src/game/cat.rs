@@ -23,6 +23,7 @@ struct CatBundle {
     animation_indicies: AnimationIndicies,
 }
 
+
 #[derive(Resource, Clone)]
 pub struct CatImageHandles {
     pub idle: Handle<Image>,
@@ -65,7 +66,7 @@ impl Cat {
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
             state_queue: StateQueue(VecDeque::new()),
-            state: super::systems::state::CatState::JUMP,
+            state: super::systems::state::CatState::IDLE,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
             sprite: SpriteBundle {
@@ -78,7 +79,7 @@ impl Cat {
                 index: animation_indicies.first,
             },
             animation_indicies,
-            animation_timer: AnimationTimer(Timer::from_seconds(0.15, TimerMode::Repeating)),
+            animation_timer: AnimationTimer(Timer::from_seconds(0.13, TimerMode::Repeating)),
         });
     }
 }

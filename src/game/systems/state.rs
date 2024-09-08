@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use color_eyre::eyre::{Context, ContextCompat};
-use log::info;
+use log::debug;
 use rand::Rng;
 use std::collections::VecDeque;
 
@@ -43,7 +43,7 @@ pub fn update_state_from_queue(
     let state = state.into_inner();
 
     for _tick in ev_sprite_tick.read() {
-        info!("received tick");
+        trace!("received tick");
         *state = queue
             .0
             .pop_front()
@@ -53,13 +53,9 @@ pub fn update_state_from_queue(
                 err
             })
             .unwrap();
-        info!("what the fuck {:#?}", &state);
+        debug!("Current State {:#?}", &state);
     }
 
-    // if animation_indicies.last != atlas.index {
-    //     return;
-    // } else {
-    // }
 }
 
 pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
