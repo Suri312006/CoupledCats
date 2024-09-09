@@ -1,6 +1,5 @@
-use bevy::prelude::*;
 
-use super::Cat;
+use bevy::prelude::*;
 
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);

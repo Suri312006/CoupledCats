@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use color_eyre::eyre::Context;
 
-use super::{animate::AnimationIndicies, state::CatState, CatImageHandles};
+use crate::game::cat::*;
+
+use super::{animate::AnimationIndicies, state::CatState};
 
 pub fn update_texture_from_state(
     textures: Res<CatImageHandles>,
