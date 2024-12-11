@@ -12,7 +12,7 @@ use coupled_cats::{
     Client, CoupledCats, Daemon,
 };
 use log::error;
-use tokio::sync::mpsc::{self, error::TryRecvError};
+use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -55,7 +55,6 @@ async fn main() -> Result<()> {
     app.insert_resource(ClientLink(Bridge::new(bevy_client_sender, client_receiver)));
     app.insert_resource(DaemonLink(Bridge::new(bevy_daemon_sender, daemon_receiver)));
 
-    // eventually wanna pass bridge into here
     CoupledCats::run(app);
     Ok(())
 }

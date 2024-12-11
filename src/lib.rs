@@ -8,6 +8,6 @@ pub mod grpc {
     tonic::include_proto!("coupledcats");
 }
 
-pub use daemon::*;
 pub use client::*;
+pub use daemon::*;
 pub use game::*;

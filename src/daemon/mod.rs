@@ -1,5 +1,3 @@
-mod peer;
-
 use std::{
     net::SocketAddr,
     sync::{Arc, Mutex},
