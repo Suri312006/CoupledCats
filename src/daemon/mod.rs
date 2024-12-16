@@ -2,6 +2,7 @@ use std::{
     net::SocketAddr,
     sync::{Arc, Mutex},
 };
+mod peer;
 
 use color_eyre::eyre::Result;
 use log::error;
