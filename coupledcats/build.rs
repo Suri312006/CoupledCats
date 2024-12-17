@@ -4,12 +4,12 @@ fn main() {
         .protoc_arg("--experimental_allow_proto3_optional")
         .compile(
             &[
-                "./proto/peer.proto",
-                "./proto/local.proto",
-                "./proto/matchmaker.proto",
+                "../proto/peer.proto",
+                "../proto/local.proto",
+                "../proto/matchmaker.proto",
             ],
             // this is where our proto files are
-            &["./proto"],
+            &["../proto"],
         )
         .unwrap_or_else(|e| panic!("unable to compile proto's due to {e:?}"))
 }
