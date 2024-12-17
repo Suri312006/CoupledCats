@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "coupled-cats",
+  "productName": "catconfigurator",
   "version": "0.1.0",
-  "identifier": "com.coupled-cats.app",
+  "identifier": "com.catconfigurator.app",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "coupled-cats",
+        "title": "catconfigurator",
         "width": 800,
         "height": 600
       }

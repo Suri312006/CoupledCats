@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package coupledcats;
+
+message LocalHeartbeatReq{
+    string name = 1;
+}
+
+message LocalHeartbeatRes{
+    string reply = 1;
+}
+
+service Local{
+    rpc Heartbeat(LocalHeartbeatReq) returns (LocalHeartbeatRes);
+}
