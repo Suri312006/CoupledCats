@@ -3,7 +3,7 @@ use color_eyre::eyre::Context;
 
 use crate::game::cat::*;
 
-use super::{animate::AnimationIndices, state::CatState};
+use super::{animate::AnimationIndices, behavior::CatState};
 
 pub fn update_texture_from_state(
     textures: Res<CatImageHandles>,

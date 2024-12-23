@@ -1,9 +1,9 @@
 // use animate::{animate_sprite, cat_sprite_tick, SpriteTick};
 use animate::{animate_sprite, SpriteTick};
+use behavior::{randomize_state, update_state_from_queue};
 use bevy::prelude::*;
 use movement::move_window;
 use network::{init_network_systems, NetworkEvent};
-use state::{randomize_state, update_state_from_queue};
 use texture::update_texture_from_state;
 
 use super::cat::Cat;
@@ -12,7 +12,6 @@ pub(super) mod animate;
 pub(super) mod behavior;
 pub(super) mod movement;
 pub(super) mod network;
-pub(super) mod state;
 pub(super) mod texture;
 
 pub fn init_systems(app: &mut App) {

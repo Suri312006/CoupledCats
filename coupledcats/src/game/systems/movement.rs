@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::systems::state::CatState;
+use crate::game::systems::behavior::CatState;
 
 #[derive(Component, Default)]
 pub struct Velocity(pub IVec2);

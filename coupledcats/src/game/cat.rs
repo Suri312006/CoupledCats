@@ -4,8 +4,8 @@ use bevy::prelude::*;
 
 use super::systems::{
     animate::{AnimationIndices, AnimationTimer},
+    behavior::{CatState, StateQueue},
     movement::{Bounds, Velocity},
-    state::{CatState, StateQueue},
 };
 
 #[derive(Component)]
@@ -64,8 +64,8 @@ impl Cat {
 
         commands.spawn(Camera2dBundle::default());
         commands.spawn(CatBundle {
-            state_queue: StateQueue(VecDeque::new()),
-            state: super::systems::state::CatState::IDLE,
+            state_queue: StateQueue(VecDeque::with_capacity(2)),
+            state: CatState::IDLE,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
             sprite: SpriteBundle {
