@@ -1,4 +1,5 @@
 use bevy::{
+    log::{Level, LogPlugin},
     prelude::*,
     window::{Cursor, WindowLevel, WindowResolution},
 };
@@ -29,6 +30,13 @@ impl CoupledCats {
             DefaultPlugins
                 .set(WindowPlugin {
                     primary_window: Some(trans_window),
+                    ..default()
+                })
+                .set(LogPlugin {
+                    level: Level::DEBUG,
+                    filter:
+                        "wgpu_core=warn,wgpu_hal=warn,h2=warn,naga=warn,bevy_time=warn,tower=warn"
+                            .into(),
                     ..default()
                 })
                 .set(ImagePlugin::default_nearest()), // needed for clear sprites,

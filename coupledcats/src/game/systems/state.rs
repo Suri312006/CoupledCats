@@ -1,12 +1,9 @@
 use bevy::prelude::*;
-
 use color_eyre::eyre::{Context, ContextCompat};
-use log::debug;
 use rand::Rng;
 use std::collections::VecDeque;
 
-use super::animate::{AnimationIndicies, SpriteTick};
-
+use super::animate::{AnimationIndices, SpriteTick};
 #[derive(Component, Debug)]
 pub enum CatState {
     IDLE,
@@ -16,7 +13,7 @@ pub enum CatState {
     SLEEP,
     TAP,
     JUMP,
-    STRECH,
+    STRETCH,
 }
 
 #[derive(Component, Default)]
@@ -24,14 +21,9 @@ pub struct StateQueue<T>(pub VecDeque<T>);
 
 pub fn update_state_from_queue(
     mut ev_sprite_tick: EventReader<SpriteTick>,
-    mut query: Query<(
-        &mut TextureAtlas,
-        &mut CatState,
-        &mut StateQueue<CatState>,
-        &mut AnimationIndicies,
-    )>,
+    mut query: Query<(&mut CatState, &mut StateQueue<CatState>)>,
 ) {
-    let (atlas, state, mut queue, animation_indicies) = query
+    let (state, mut queue) = query
         .get_single_mut()
         .with_context(|| {
             let err_msg = "failed to update state due to weird query behavior";
@@ -55,7 +47,6 @@ pub fn update_state_from_queue(
             .unwrap();
         debug!("Current State {:#?}", &state);
     }
-
 }
 
 pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
@@ -101,13 +92,13 @@ pub fn randomize_state(mut query: Query<&mut StateQueue<CatState>>) {
         },
         CatState::SLEEP => match rng.gen_range(0..100) {
             0..99 => CatState::SLEEP,
-            _ => CatState::STRECH,
+            _ => CatState::STRETCH,
         },
         CatState::TAP => {
             // nothing should ever lead to here
             CatState::IDLE
         }
-        CatState::STRECH => CatState::IDLE,
+        CatState::STRETCH => CatState::IDLE,
     };
 
     queue.as_mut().0.push_back(curr);

@@ -2,7 +2,7 @@ use std::{net::SocketAddr, str::FromStr, thread::sleep, time::Duration};
 
 use bevy::prelude::*;
 use color_eyre::eyre::Result;
-use coupled_cats::{
+use coupledcats::{
     bridge::{
         clientlink::{BevyClientMessage, ClientLink, ClientMessage},
         serverlink::{BevyDaemonMessage, DaemonLink, DaemonMessage},
@@ -16,14 +16,14 @@ use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    meow::setup()?;
-
     let (client_sender, client_receiver) = mpsc::channel::<ClientMessage>(100);
     let (daemon_sender, daemon_receiver) = mpsc::channel::<DaemonMessage>(100);
     let (bevy_client_sender, bevy_client_receiver) = mpsc::channel::<BevyClientMessage>(100);
     let (bevy_daemon_sender, bevy_daemon_receiver) = mpsc::channel::<BevyDaemonMessage>(100);
 
+    meow::setup()?;
     tokio::spawn(async move {
+        // meow::setup().unwrap();
         let daemon = Daemon::new(
             Bridge::new(daemon_sender, bevy_daemon_receiver),
             SocketAddr::from_str("[::1]:50051").expect("Weird ahh socket"),
@@ -33,6 +33,7 @@ async fn main() -> Result<()> {
     });
 
     tokio::spawn(async move {
+        // meow::setup().unwrap();
         sleep(Duration::from_secs(2));
         let client = match Client::new(
             Bridge::new(client_sender, bevy_client_receiver),

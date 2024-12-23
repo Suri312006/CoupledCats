@@ -1,11 +1,10 @@
-
 use bevy::prelude::*;
 
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(pub Timer);
 
 #[derive(Component)]
-pub struct AnimationIndicies {
+pub struct AnimationIndices {
     pub first: usize,
     pub last: usize,
 }
@@ -15,11 +14,14 @@ pub struct SpriteTick {}
 
 pub fn animate_sprite(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndicies, &mut AnimationTimer, &mut TextureAtlas)>,
+    mut sprite_tick: EventWriter<SpriteTick>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut TextureAtlas)>,
 ) {
     for (indices, mut timer, mut atlas) in &mut query {
         timer.tick(time.delta());
         if timer.just_finished() {
+            sprite_tick.send(SpriteTick {});
+            trace!("Sprite Tick Sent!");
             atlas.index = if atlas.index == indices.last {
                 indices.first
             } else {
@@ -29,13 +31,14 @@ pub fn animate_sprite(
     }
 }
 
-pub fn cat_sprite_tick(
-    mut sprite_tick: EventWriter<SpriteTick>,
-    mut query: Query<(&AnimationIndicies, &mut AnimationTimer, &mut TextureAtlas)>,
-) {
-    let (indices, mut timer, mut atlas) = query.get_single_mut().expect("wanted to find cat");
+// pub fn cat_sprite_tick(
+//     mut sprite_tick: EventWriter<SpriteTick>,
+//     mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut TextureAtlas)>,
+// ) {
+//     let (indices, mut timer, mut atlas) = query.get_single_mut().expect("wanted to find cat");
 
-    if indices.last == atlas.index {
-        sprite_tick.send(SpriteTick {});
-    }
-}
+//     if indices.last == atlas.index {
+//         sprite_tick.send(SpriteTick {});
+//         info!("Sprite Tick Sent!");
+//     }
+// }

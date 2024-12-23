@@ -2,7 +2,7 @@ fn main() {
     tonic_build::configure()
         .build_client(true)
         .protoc_arg("--experimental_allow_proto3_optional")
-        .compile(
+        .compile_protos(
             &[
                 "../proto/peer.proto",
                 "../proto/local.proto",

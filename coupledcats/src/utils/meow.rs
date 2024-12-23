@@ -1,6 +1,5 @@
 use std::time::SystemTime;
 
-use color_eyre::owo_colors::OwoColorize;
 use fern::colors::{Color, ColoredLevelConfig};
 
 pub fn setup() -> Result<(), fern::InitError> {
@@ -23,6 +22,9 @@ pub fn setup() -> Result<(), fern::InitError> {
             ))
         })
         .level(log::LevelFilter::Trace)
+        // .level(log::LevelFilter::Info)
+        // .level(log::LevelFilter::Debug)
+        // .level(log::LevelFilter::Off)
         .level_for("wgpu_core", log::LevelFilter::Off)
         .level_for("calloop", log::LevelFilter::Off)
         .level_for("naga", log::LevelFilter::Off)

@@ -32,7 +32,7 @@ impl Peer for MyPeerServer {
         &self,
         request: Request<PeerHeartbeatReq>,
     ) -> Result<Response<PeerHeartbeatRes>, Status> {
-        trace!("Heartbeat recieved from {}", request.into_inner().name);
+        trace!("Heartbeat received from {}", request.into_inner().name);
 
         match self
             .link

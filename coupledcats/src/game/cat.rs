@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use bevy::prelude::*;
 
 use super::systems::{
-    animate::{AnimationIndicies, AnimationTimer},
+    animate::{AnimationIndices, AnimationTimer},
     movement::{Bounds, Velocity},
     state::{CatState, StateQueue},
 };
@@ -20,9 +20,8 @@ struct CatBundle {
     sprite: SpriteBundle,
     texture_atlas: TextureAtlas,
     animation_timer: AnimationTimer,
-    animation_indicies: AnimationIndicies,
+    animation_indices: AnimationIndices,
 }
-
 
 #[derive(Resource, Clone)]
 pub struct CatImageHandles {
@@ -33,7 +32,7 @@ pub struct CatImageHandles {
     pub sleep: Handle<Image>,
     pub tap: Handle<Image>,
     pub jump: Handle<Image>,
-    pub strech: Handle<Image>,
+    pub stretch: Handle<Image>,
 }
 
 // cat has sprite stuff
@@ -48,7 +47,7 @@ impl Cat {
         let texture = asset_server.load("cat/groom.png");
         let layout = TextureAtlasLayout::from_grid(UVec2::new(32, 21), 4, 1, None, None);
         let texture_atlas_layout = texture_atlas_layout.add(layout);
-        let animation_indicies = AnimationIndicies { first: 0, last: 3 };
+        let animation_indices = AnimationIndices { first: 0, last: 3 };
 
         let image_handles = CatImageHandles {
             idle: asset_server.load("cat/idle.png"),
@@ -58,7 +57,7 @@ impl Cat {
             walk: asset_server.load("cat/walk.png"),
             sleep: asset_server.load("cat/sleep.png"),
             tap: asset_server.load("cat/tap.png"),
-            strech: asset_server.load("cat/strech.png"),
+            stretch: asset_server.load("cat/strech.png"),
         };
 
         commands.insert_resource(image_handles);
@@ -76,9 +75,9 @@ impl Cat {
             },
             texture_atlas: TextureAtlas {
                 layout: texture_atlas_layout,
-                index: animation_indicies.first,
+                index: animation_indices.first,
             },
-            animation_indicies,
+            animation_indices,
             animation_timer: AnimationTimer(Timer::from_seconds(0.13, TimerMode::Repeating)),
         });
     }

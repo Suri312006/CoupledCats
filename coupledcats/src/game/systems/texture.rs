@@ -3,7 +3,7 @@ use color_eyre::eyre::Context;
 
 use crate::game::cat::*;
 
-use super::{animate::AnimationIndicies, state::CatState};
+use super::{animate::AnimationIndices, state::CatState};
 
 pub fn update_texture_from_state(
     textures: Res<CatImageHandles>,
@@ -12,12 +12,12 @@ pub fn update_texture_from_state(
         &mut TextureAtlas,
         &mut Handle<Image>,
         &CatState,
-        &mut AnimationIndicies,
+        &mut AnimationIndices,
     )>,
 ) {
-    // see if there is some new state thats availible to transfer into.
+    // see if there is some new state thats available to transfer into.
 
-    let (atlas, texture, state, animation_indicies) = query
+    let (atlas, texture, state, animation_indices) = query
         .get_single_mut()
         .with_context(|| {
             let err_msg = "failed to update state due to weird query behavior";
@@ -26,7 +26,7 @@ pub fn update_texture_from_state(
         })
         .unwrap();
 
-    if animation_indicies.last != atlas.index {
+    if animation_indices.last != atlas.index {
         return;
     }
 
@@ -45,7 +45,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 3 };
         }
 
         CatState::LICK => {
@@ -60,7 +60,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 3 };
         }
 
         CatState::GROOM => {
@@ -75,7 +75,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 3 };
         }
 
         CatState::JUMP => {
@@ -90,7 +90,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 6 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 6 };
         }
 
         CatState::WALK => {
@@ -105,7 +105,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 7 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 7 };
         }
 
         CatState::SLEEP => {
@@ -120,7 +120,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 3 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 3 };
         }
 
         CatState::TAP => {
@@ -135,11 +135,11 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 5 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 5 };
         }
 
-        CatState::STRECH => {
-            *texture.into_inner() = textures.strech.clone();
+        CatState::STRETCH => {
+            *texture.into_inner() = textures.stretch.clone();
             *atlas.into_inner() = TextureAtlas {
                 layout: texture_atlas_layout.add(TextureAtlasLayout::from_grid(
                     UVec2::new(32, 16),
@@ -150,7 +150,7 @@ pub fn update_texture_from_state(
                 )),
                 index: 0 as usize,
             };
-            *animation_indicies.into_inner() = AnimationIndicies { first: 0, last: 7 };
+            *animation_indices.into_inner() = AnimationIndices { first: 0, last: 7 };
         }
     }
 }
