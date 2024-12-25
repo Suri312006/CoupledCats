@@ -1,7 +1,7 @@
 use bevy::{
     log::{Level, LogPlugin},
     prelude::*,
-    window::{Cursor, WindowLevel, WindowResolution},
+    window::{CursorOptions, WindowLevel, WindowResolution},
 };
 use systems::init_systems;
 
@@ -19,7 +19,7 @@ impl CoupledCats {
             resizable: false,
             resolution: WindowResolution::new(200.0, 200.0).with_scale_factor_override(1.0),
             position: WindowPosition::Centered(MonitorSelection::Current),
-            cursor: Cursor {
+            cursor_options: CursorOptions {
                 hit_test: false,
                 ..default()
             },

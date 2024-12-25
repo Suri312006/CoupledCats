@@ -15,13 +15,19 @@ pub struct SpriteTick {}
 pub fn animate_sprite(
     time: Res<Time>,
     mut sprite_tick: EventWriter<SpriteTick>,
-    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut TextureAtlas)>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
 ) {
-    for (indices, mut timer, mut atlas) in &mut query {
+    for (indices, mut timer, mut sprite) in &mut query {
         timer.tick(time.delta());
         if timer.just_finished() {
             sprite_tick.send(SpriteTick {});
             trace!("Sprite Tick Sent!");
+
+            let atlas = sprite
+                .texture_atlas
+                .as_mut()
+                .expect("Texture Atlas Expected");
+
             atlas.index = if atlas.index == indices.last {
                 indices.first
             } else {

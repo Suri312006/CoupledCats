@@ -5,7 +5,6 @@ edition = "2021"
 
 
 [dependencies]
-bevy = "0.14.1"
 display-info = "0.5.1"
 
 
@@ -31,6 +30,8 @@ fern = { version = "0.6", features = ["colored"] }
 color-eyre = "0.6"
 humantime = "2.1.0"
 rand = "0.8.5"
+bevior_tree = "0.7.0"
+bevy = "0.15.0"
 
 [build-dependencies]
 tonic-build = "0.12"

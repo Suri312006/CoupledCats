@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::info};
 
 use super::systems::{
     animate::{AnimationIndices, AnimationTimer},
@@ -17,8 +17,8 @@ struct CatBundle {
     state: CatState,
     velocity: Velocity,
     bounds: Bounds,
-    sprite: SpriteBundle,
-    texture_atlas: TextureAtlas,
+    sprite: Sprite,
+    // texture_atlas: TextureAtlas,
     animation_timer: AnimationTimer,
     animation_indices: AnimationIndices,
 }
@@ -44,7 +44,7 @@ impl Cat {
     ) {
         //TODO: bind it to one monitor
 
-        let texture = asset_server.load("cat/groom.png");
+        let texture = asset_server.load::<Image>("cat/groom.png");
         let layout = TextureAtlasLayout::from_grid(UVec2::new(32, 21), 4, 1, None, None);
         let texture_atlas_layout = texture_atlas_layout.add(layout);
         let animation_indices = AnimationIndices { first: 0, last: 3 };
@@ -62,21 +62,33 @@ impl Cat {
 
         commands.insert_resource(image_handles);
 
+        let mut sprite = Sprite::from_atlas_image(
+            texture,
+            TextureAtlas {
+                layout: texture_atlas_layout,
+                index: animation_indices.first,
+            },
+        );
+
+        let scale = 1.2;
+        sprite.custom_size = Some(Vec2::new(150.0 * scale, 100.0 * scale));
+
         commands.spawn(Camera2dBundle::default());
+        commands.spawn(Transform::from_scale(Vec3::splat(6.0)));
         commands.spawn(CatBundle {
             state_queue: StateQueue(VecDeque::with_capacity(2)),
             state: CatState::IDLE,
             velocity: Velocity(IVec2::new(0, 0)),
             bounds: Bounds(UVec2::new(1920 - 300, 1080)),
-            sprite: SpriteBundle {
-                transform: Transform::from_scale(Vec3::splat(5.0)),
-                texture,
-                ..default()
-            },
-            texture_atlas: TextureAtlas {
-                layout: texture_atlas_layout,
-                index: animation_indices.first,
-            },
+            sprite, // sprite: SpriteBundle {
+            //     transform: Transform::from_scale(Vec3::splat(5.0)),
+            //     texture,
+            //     ..default()
+            // },
+            // texture_atlas: TextureAtlas {
+            //     layout: texture_atlas_layout,
+            //     index: animation_indices.first,
+            // },
             animation_indices,
             animation_timer: AnimationTimer(Timer::from_seconds(0.13, TimerMode::Repeating)),
         });
